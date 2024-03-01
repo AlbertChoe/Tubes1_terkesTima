@@ -8,14 +8,14 @@ from game.bot_handler import BotHandler
 from game.logic.random import RandomLogic
 from game.util import *
 from game.logic.base import BaseLogic
-
+from game.logic.mybot import BertBots
 init()
 BASE_URL = "http://localhost:3000/api"
+# BASE_URL = "http://172.21.208.1:8082/api"
 DEFAULT_BOARD_ID = 1
 CONTROLLERS = {
-    "Random": RandomLogic,
+    "Random": RandomLogic, "MyBot": BertBots
 }
-
 ###############################################################################
 #
 # Parse command line arguments
@@ -28,12 +28,15 @@ group.add_argument(
     help="A bot token to use when running using an existing bot",
     action="store",
 )
-group.add_argument("--name", help="The name of the bot to register", action="store")
-parser.add_argument("--email", help="The email of the bot to register", action="store")
+group.add_argument(
+    "--name", help="The name of the bot to register", action="store")
+parser.add_argument(
+    "--email", help="The email of the bot to register", action="store")
 parser.add_argument(
     "--password", help="The password of the bot to register", action="store"
 )
-parser.add_argument("--team", help="The team of the bot to register", action="store")
+parser.add_argument(
+    "--team", help="The team of the bot to register", action="store")
 parser.add_argument(
     "--board", help="Id of the board to join", default=DEFAULT_BOARD_ID, action="store"
 )
@@ -70,7 +73,8 @@ if not args.token:
     recovered_token = bot_handler.recover(args.email, args.password)
     args.token = recovered_token
     if not recovered_token:
-        bot = bot_handler.register(args.name, args.email, args.password, args.team)
+        bot = bot_handler.register(
+            args.name, args.email, args.password, args.team)
         if bot:
             print("")
             print(
@@ -107,7 +111,8 @@ if logic_controller not in CONTROLLERS:
     exit(1)
 
 if not bot.name:
-    print(Fore.RED + Style.BRIGHT + "Error: " + Style.RESET_ALL + "Bot does not exist")
+    print(Fore.RED + Style.BRIGHT + "Error: " +
+          Style.RESET_ALL + "Bot does not exist")
     exit(1)
 print(Fore.BLUE + Style.BRIGHT + "Welcome back, " + Style.RESET_ALL + bot.name)
 
@@ -203,7 +208,7 @@ while True:
 
     # Don't spam the board more than it allows!
     # sleep(move_delay * time_factor)
-    sleep(1)
+    sleep(0.5)
 
 
 ###############################################################################
