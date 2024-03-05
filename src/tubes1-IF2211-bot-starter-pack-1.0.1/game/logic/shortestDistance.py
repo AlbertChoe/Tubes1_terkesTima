@@ -8,15 +8,7 @@ import math
 
 
 def calculate_distance(a: Position, b: Position) -> int:
-    return (abs(a.x - b.x) + abs(a.y - b.y))
-
-
-def direction_correcter(deltax, deltay):
-    if deltax == 0 and deltay == 0:
-        delta_x, delta_y = random.choice(
-            [(1, 0), (0, 1), (-1, 0), (0, -1)])
-        return delta_x, delta_y
-    return deltax, deltay
+    return ((a.x - b.x)**2 + (a.y - b.y)**2)
 
 
 def find_nearest_diamond(current: Position, diamonds: List[GameObject]) -> Optional[Position]:
@@ -68,13 +60,15 @@ def get_direction_pribadi(current_x, current_y, dest_x, dest_y, avoid_teleporter
     return (delta_x, delta_y)
 
 
-def is_on_path_or_close(diamond_position, bot_position, threshold):
-    close_to_path = calculate_distance(
-        diamond_position, bot_position) <= threshold
-    return close_to_path
+def is_on_path_or_close(diamond_position, bot_position, base_position, threshold):
+    on_path = (diamond_position.x == bot_position.x == base_position.x) or (
+        diamond_position.y == bot_position.y == base_position.y)
+    close_to_path = calculate_distance(diamond_position, bot_position) <= threshold or calculate_distance(
+        diamond_position, base_position) <= threshold
+    return on_path or close_to_path
 
 
-class BertBots(BaseLogic):
+class shortdistance(BaseLogic):
     def __init__(self):
         self.directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
         self.goal_position: Optional[Position] = None
@@ -98,17 +92,8 @@ class BertBots(BaseLogic):
             elif obj.type == 'DiamondButtonGameObject':
                 diamond_button_game_objects.append(obj)
 
-        for diamond in diamond_game_objects:
-            distance = max(1, calculate_distance(
-                bot_position, diamond.position))
-            diamond.density = diamond.properties.points / distance
-
-        # Find the diamond with the highest density
-        highest_density_diamond = max(
-            diamond_game_objects, key=lambda d: d.density, default=None)
-
-        time_to_reach_base = calculate_distance(
-            board_bot.position, base)
+        time_to_reach_base = math.ceil(math.sqrt(calculate_distance(
+            board_bot.position, base)))
         nearest_diamond = find_nearest_diamond(
             bot_position, diamond_game_objects)
         nearest_teleporter_pair = find_nearest_teleporter_pair(
@@ -132,10 +117,9 @@ class BertBots(BaseLogic):
                 self.goal_position = nearest_teleporter
             else:
                 path_diamonds = [diamond for diamond in diamond_game_objects if is_on_path_or_close(
-                    diamond.position, bot_position, threshold=3) and diamond.properties.points + props.diamonds <= props.inventory_size]
-                if time_left < time_to_reach_base:
-                    self.goal_position = base
-                elif path_diamonds:
+                    diamond.position, bot_position, base, threshold=4) and diamond.properties.points + props.diamonds <= props.inventory_size]
+
+                if path_diamonds:
                     nearest_path_diamond = find_nearest_diamond(
                         bot_position, path_diamonds)
                     self.goal_position = nearest_path_diamond
@@ -151,7 +135,7 @@ class BertBots(BaseLogic):
             else:
                 self.goal_position = base
 
-        elif not any(diamond for diamond in diamond_game_objects if calculate_distance(diamond.position, base) <= radius):
+        elif not any(diamond for diamond in diamond_game_objects if calculate_distance(diamond.position, base) <= radius**2):
             nearest_diamond_button = find_nearest_diamond(
                 bot_position, diamond_button_game_objects)
             if calculate_distance(bot_position, nearest_diamond) <= calculate_distance(bot_position, nearest_diamond_button):
@@ -161,23 +145,27 @@ class BertBots(BaseLogic):
 
         else:
             distance_to_diamond = calculate_distance(
-                bot_position, highest_density_diamond.position)
-            if nearest_teleporter and distance_to_diamond > calculate_distance(nearest_teleporter, highest_density_diamond.position):
+                bot_position, nearest_diamond)
+            if nearest_teleporter and distance_to_diamond > calculate_distance(nearest_teleporter, nearest_diamond):
                 self.goal_position = nearest_teleporter
             else:
-                self.goal_position = highest_density_diamond.position
+                self.goal_position = nearest_diamond
+
         if self.goal_position:
             if bot_position == nearest_teleporter and self.goal_position == nearest_teleporter:
-                self.goal_position = base
-                delta_x, delta_y = get_direction_pribadi(
-                    bot_position.x, bot_position.y, self.goal_position.x, self.goal_position.y)
-
+                delta_x, delta_y = random.choice(
+                    [(1, 0), (0, 1), (-1, 0), (0, -1)])
             else:
                 teleporter_positions = [
                     teleporter.position for teleporter in teleport_game_objects]
-                delta_x, delta_y = get_direction_pribadi(
-                    bot_position.x, bot_position.y, self.goal_position.x, self.goal_position.y, avoid_teleporters=teleporter_positions)
 
+                delta_x, delta_y = get_direction_pribadi(
+                    bot_position.x,
+                    bot_position.y,
+                    self.goal_position.x,
+                    self.goal_position.y,
+                    avoid_teleporters=teleporter_positions
+                )
         else:
             # Roam around
             delta = self.directions[self.current_direction]
@@ -187,7 +175,4 @@ class BertBots(BaseLogic):
                 self.current_direction = (self.current_direction + 1) % len(
                     self.directions
                 )
-
-        if delta_x == 0 and delta_y == 0:
-            delta_x, delta_y = direction_correcter(delta_x, delta_y)
         return delta_x, delta_y
