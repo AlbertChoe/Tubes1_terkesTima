@@ -134,7 +134,6 @@ class HighestValue(BaseLogic):
                     self.goal_position = nearest_path_diamond_with_1_points
                 else:
                     self.goal_position = base
-            print("pil 1")
         elif (props.diamonds >= 2 and time_left < time_to_reach_base + 3):
             distance_to_base = calculate_distance(bot_position, base)
             distance_to_base_via_teleport = calculate_distance(
@@ -143,15 +142,12 @@ class HighestValue(BaseLogic):
                 self.goal_position = nearest_teleporter
             else:
                 self.goal_position = base
-            print("pil 2")
         elif diamonds_with_2_points:
             nearest_diamond_with_2_points = find_nearest_diamond(
                 bot_position, diamonds_with_2_points)
             self.goal_position = nearest_diamond_with_2_points
-            print("pil 3")
         else:
             self.goal_position = nearest_diamond_with_1_point
-            print("pil 4")
         if self.goal_position:
             if bot_position == nearest_teleporter and self.goal_position == nearest_teleporter:
                 self.goal_position = base
