@@ -157,12 +157,17 @@ class BertBots(BaseLogic):
             if calculate_distance(bot_position, nearest_diamond) <= calculate_distance(bot_position, nearest_diamond_button):
                 self.goal_position = nearest_diamond
             else:
-                self.goal_position = nearest_diamond_button
+                distance_to_diamond_button = calculate_distance(
+                    bot_position, nearest_diamond_button)
+                if nearest_teleporter and distance_to_diamond_button > calculate_distance(paired_teleporter, nearest_diamond_button) + calculate_distance(bot_position, nearest_teleporter):
+                    self.goal_position = nearest_teleporter
+                else:
+                    self.goal_position = nearest_diamond_button
 
         else:
             distance_to_diamond = calculate_distance(
                 bot_position, highest_density_diamond.position)
-            if nearest_teleporter and distance_to_diamond > calculate_distance(nearest_teleporter, highest_density_diamond.position):
+            if nearest_teleporter and distance_to_diamond > calculate_distance(paired_teleporter, highest_density_diamond.position) + calculate_distance(bot_position, nearest_teleporter):
                 self.goal_position = nearest_teleporter
             else:
                 self.goal_position = highest_density_diamond.position
