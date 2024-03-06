@@ -10,15 +10,16 @@ from game.util import *
 from game.logic.base import BaseLogic
 from game.logic.mybot import BertBots
 from game.logic.highestValue import HighestValue
-from game.logic.highestDensity import highestDensity
+from game.logic.density2 import highestDensity
 from game.logic.shortestDistance import shortdistance
+from game.logic.closestBase import closestBase
 
 init()
 BASE_URL = "http://localhost:3000/api"
 # BASE_URL = "http://172.21.208.1:8082/api"
 DEFAULT_BOARD_ID = 1
 CONTROLLERS = {
-    "Random": RandomLogic, "MyBot": BertBots,  "highvalue": HighestValue, "density": highestDensity, "shortdistance": shortdistance
+    "Random": RandomLogic, "MyBot": BertBots,  "highvalue": HighestValue, "density2": highestDensity, "shortdistance": shortdistance, "closestbase" : closestBase
 }
 ###############################################################################
 #
@@ -212,7 +213,7 @@ while True:
 
     # Don't spam the board more than it allows!
     # sleep(move_delay * time_factor)
-    sleep(0.8)
+    sleep(1)
 
 
 ###############################################################################
