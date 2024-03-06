@@ -103,7 +103,6 @@ class BertBots(BaseLogic):
                 bot_position, diamond.position))
             diamond.density = diamond.properties.points / distance
 
-        # Find the diamond with the highest density
         highest_density_diamond = max(
             diamond_game_objects, key=lambda d: d.density, default=None)
 
