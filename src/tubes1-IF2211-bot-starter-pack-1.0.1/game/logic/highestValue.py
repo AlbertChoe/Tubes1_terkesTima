@@ -10,6 +10,12 @@ import math
 def calculate_distance(a: Position, b: Position) -> int:
     return ((a.x - b.x)**2 + (a.y - b.y)**2)
 
+def direction_correcter(deltax, deltay):
+    if deltax == 0 and deltay == 0:
+        delta_x, delta_y = random.choice(
+            [(1, 0), (0, 1), (-1, 0), (0, -1)])
+        return delta_x, delta_y
+    return deltax, deltay
 
 def find_nearest_diamond(current: Position, diamonds: List[GameObject]) -> Optional[Position]:
     if not diamonds:
@@ -23,7 +29,6 @@ def find_nearest_teleporter_pair(current: Position, teleporters: List[GameObject
     nearest_teleporter_pair = None
     min_distance = float('inf')
 
-    # Group teleporters
     teleporter_pairs = {}
     for teleporter in teleporters:
         pair_id = teleporter.properties.pair_id
@@ -31,7 +36,6 @@ def find_nearest_teleporter_pair(current: Position, teleporters: List[GameObject
             teleporter_pairs[pair_id] = []
         teleporter_pairs[pair_id].append(teleporter)
 
-    # Cari teleporter terdekat
     for pair_id, pair in teleporter_pairs.items():
         if len(pair) == 2:
             teleporter, paired_teleporter = pair
@@ -48,16 +52,13 @@ def get_direction_pribadi(current_x, current_y, dest_x, dest_y, avoid_teleporter
     delta_x = clamp(dest_x - current_x, -1, 1)
     delta_y = clamp(dest_y - current_y, -1, 1)
 
-    # If the next move is into a teleporter and the destination is not a teleporter, try to avoid it
     if (current_x + delta_x, current_y + delta_y) in avoid_teleporters and (dest_x, dest_y) not in avoid_teleporters:
-        # Try changing the direction to avoid the teleporter
         alternative_moves = [(1, 0), (0, 1), (-1, 0), (0, -1)]
         alternative_moves.remove((delta_x, delta_y))
         for move in alternative_moves:
             if (current_x + move[0], current_y + move[1]) not in avoid_teleporters:
                 return move
         return (delta_x, delta_y)
-        # If no alternative move avoids a teleporter, proceed with the original move
     else:
         if delta_x != 0:
             delta_y = 0
@@ -65,11 +66,8 @@ def get_direction_pribadi(current_x, current_y, dest_x, dest_y, avoid_teleporter
 
 
 def is_on_path_or_close(diamond_position, bot_position, base_position, threshold):
-    # Check if the diamond is on the straight line path between the bot and the base
     on_path = (diamond_position.x == bot_position.x == base_position.x) or (
         diamond_position.y == bot_position.y == base_position.y)
-    # Check if the diamond
-    #  is within the threshold distance from the path
     close_to_path = calculate_distance(diamond_position, bot_position) <= threshold or calculate_distance(
         diamond_position, base_position) <= threshold
     return on_path or close_to_path
@@ -166,5 +164,8 @@ class HighestValue(BaseLogic):
             if random.random() > 0.6:
                 self.current_direction = (
                     self.current_direction + 1) % len(self.directions)
+                
+        if delta_x == 0 and delta_y == 0:
+            delta_x, delta_y = direction_correcter(delta_x, delta_y)
 
         return delta_x, delta_y
