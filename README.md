@@ -2,6 +2,8 @@
 <h1 align="center"> Semester II tahun 2023/2024 </h1>
 <h1 align="center"> Pemanfaatan Algoritma Greedy dalam Pembuatan Bot Permainan Diamonds </h1>
 
+<h1 align=""> Kelompok 28: terkeStima </h1>
+
 | NIM      | Nama               | Kelas |
 | -------- | ------------------ | ----- |
 | 13522081 | Albert             | K-01  |

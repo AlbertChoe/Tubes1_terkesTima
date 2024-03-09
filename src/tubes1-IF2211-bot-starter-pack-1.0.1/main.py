@@ -9,17 +9,23 @@ from game.logic.random import RandomLogic
 from game.util import *
 from game.logic.base import BaseLogic
 from game.logic.mybot import BertBots
-from game.logic.highestValue import HighestValue
-from game.logic.density2 import highestDensity
-from game.logic.shortestDistance import shortdistance
-from game.logic.closestBase import closestBase
+# from game.logic.archive.highestValue import HighestValue
+# from game.logic.archive.density2 import highestDensity
+# from game.logic.archive.shortestDistance import shortdistance
+# from game.logic.archive.closestBase import closestBase
+
 
 init()
 BASE_URL = "http://localhost:3000/api"
-# BASE_URL = "http://172.21.208.1:8082/api"
+
 DEFAULT_BOARD_ID = 1
 CONTROLLERS = {
-    "Random": RandomLogic, "MyBot": BertBots,  "highvalue": HighestValue, "density2": highestDensity, "shortdistance": shortdistance, "closestbase" : closestBase
+    # "Random": RandomLogic,
+    "MyBot": BertBots,  # Main bot
+    # "highvalue": HighestValue,
+    # "density2": highestDensity,
+    # "shortdistance": shortdistance,
+    # "closestbase": closestBase
 }
 ###############################################################################
 #

@@ -3,12 +3,13 @@ from typing import Optional, List, Tuple
 import random
 from game.logic.base import BaseLogic
 from game.models import GameObject, Board, Position
-from ..util import *
+# from util import *      NEED TO IMPORT UTIL FIRST TO USE THIS BOT
 import math
 
 
 def calculate_distance(a: Position, b: Position) -> int:
     return ((a.x - b.x)**2 + (a.y - b.y)**2)
+
 
 def direction_correcter(deltax, deltay):
     if deltax == 0 and deltay == 0:
@@ -16,6 +17,7 @@ def direction_correcter(deltax, deltay):
             [(1, 0), (0, 1), (-1, 0), (0, -1)])
         return delta_x, delta_y
     return deltax, deltay
+
 
 def find_nearest_diamond(current: Position, diamonds: List[GameObject]) -> Optional[Position]:
     if not diamonds:
@@ -164,7 +166,7 @@ class HighestValue(BaseLogic):
             if random.random() > 0.6:
                 self.current_direction = (
                     self.current_direction + 1) % len(self.directions)
-                
+
         if delta_x == 0 and delta_y == 0:
             delta_x, delta_y = direction_correcter(delta_x, delta_y)
 

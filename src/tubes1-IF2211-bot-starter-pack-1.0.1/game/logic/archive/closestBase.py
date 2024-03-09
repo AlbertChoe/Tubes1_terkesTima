@@ -3,12 +3,20 @@ from typing import Optional, List, Tuple
 import random
 from game.logic.base import BaseLogic
 from game.models import GameObject, Board, Position
-from ..util import *
+# from util import *      NEED TO IMPORT UTIL FIRST TO USE THIS BOT
 import math
 
 
 def calculate_distance(a: Position, b: Position) -> int:
-    return ((a.x - b.x)**2 + (a.y - b.y)**2)
+    return (abs(a.x - b.x) + abs(a.y - b.y))
+
+
+def direction_correcter(deltax, deltay):
+    if deltax == 0 and deltay == 0:
+        delta_x, delta_y = random.choice(
+            [(1, 0), (0, 1), (-1, 0), (0, -1)])
+        return delta_x, delta_y
+    return deltax, deltay
 
 
 def find_nearest_diamond(current: Position, diamonds: List[GameObject]) -> Optional[Position]:
@@ -23,7 +31,7 @@ def find_nearest_teleporter_pair(current: Position, teleporters: List[GameObject
     nearest_teleporter_pair = None
     min_distance = float('inf')
 
-    teleporter_pairs = {}  # Grouping Teleporters
+    teleporter_pairs = {}
     for teleporter in teleporters:
         pair_id = teleporter.properties.pair_id
         if pair_id not in teleporter_pairs:
@@ -60,15 +68,13 @@ def get_direction_pribadi(current_x, current_y, dest_x, dest_y, avoid_teleporter
     return (delta_x, delta_y)
 
 
-def is_on_path_or_close(diamond_position, bot_position, base_position, threshold):
-    on_path = (diamond_position.x == bot_position.x == base_position.x) or (
-        diamond_position.y == bot_position.y == base_position.y)
-    close_to_path = calculate_distance(diamond_position, bot_position) <= threshold or calculate_distance(
-        diamond_position, base_position) <= threshold
-    return on_path or close_to_path
+def is_on_path_or_close(diamond_position, bot_position, threshold):
+    close_to_path = calculate_distance(
+        diamond_position, bot_position) <= threshold
+    return close_to_path
 
 
-class shortdistance(BaseLogic):
+class closestBase(BaseLogic):
     def __init__(self):
         self.directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
         self.goal_position: Optional[Position] = None
@@ -91,9 +97,14 @@ class shortdistance(BaseLogic):
                 teleport_game_objects.append(obj)
             elif obj.type == 'DiamondButtonGameObject':
                 diamond_button_game_objects.append(obj)
+        for diamond in diamond_game_objects:
+            diamond.distance_from_base = calculate_distance(
+                diamond.position, base)
+        diamonds_sorted_by_base_distance = sorted(
+            diamond_game_objects, key=lambda d: d.distance_from_base)
 
-        time_to_reach_base = math.ceil(math.sqrt(calculate_distance(
-            board_bot.position, base)))
+        time_to_reach_base = calculate_distance(
+            board_bot.position, base)
         nearest_diamond = find_nearest_diamond(
             bot_position, diamond_game_objects)
         nearest_teleporter_pair = find_nearest_teleporter_pair(
@@ -117,9 +128,10 @@ class shortdistance(BaseLogic):
                 self.goal_position = nearest_teleporter
             else:
                 path_diamonds = [diamond for diamond in diamond_game_objects if is_on_path_or_close(
-                    diamond.position, bot_position, base, threshold=4) and diamond.properties.points + props.diamonds <= props.inventory_size]
-
-                if path_diamonds:
+                    diamond.position, bot_position, threshold=3) and diamond.properties.points + props.diamonds <= props.inventory_size]
+                if time_left < time_to_reach_base:
+                    self.goal_position = base
+                elif path_diamonds:
                     nearest_path_diamond = find_nearest_diamond(
                         bot_position, path_diamonds)
                     self.goal_position = nearest_path_diamond
@@ -135,37 +147,43 @@ class shortdistance(BaseLogic):
             else:
                 self.goal_position = base
 
-        elif not any(diamond for diamond in diamond_game_objects if calculate_distance(diamond.position, base) <= radius**2):
+        elif not any(diamond for diamond in diamond_game_objects if calculate_distance(diamond.position, base) <= radius):
             nearest_diamond_button = find_nearest_diamond(
                 bot_position, diamond_button_game_objects)
             if calculate_distance(bot_position, nearest_diamond) <= calculate_distance(bot_position, nearest_diamond_button):
                 self.goal_position = nearest_diamond
             else:
-                self.goal_position = nearest_diamond_button
+                distance_to_diamond_button = calculate_distance(
+                    bot_position, nearest_diamond_button)
+                if nearest_teleporter and distance_to_diamond_button > calculate_distance(paired_teleporter, nearest_diamond_button) + calculate_distance(bot_position, nearest_teleporter):
+                    self.goal_position = nearest_teleporter
+                else:
+                    self.goal_position = nearest_diamond_button
 
         else:
+            temp_diamond = diamonds_sorted_by_base_distance[0].position
+            for diamond in diamonds_sorted_by_base_distance:
+                if diamond.properties.points + props.diamonds <= props.inventory_size:
+                    temp_diamond = diamond.position
+                    break
             distance_to_diamond = calculate_distance(
-                bot_position, nearest_diamond)
-            if nearest_teleporter and distance_to_diamond > calculate_distance(nearest_teleporter, nearest_diamond):
+                bot_position, temp_diamond)
+            if nearest_teleporter and distance_to_diamond > calculate_distance(paired_teleporter, temp_diamond) + calculate_distance(bot_position, nearest_teleporter):
                 self.goal_position = nearest_teleporter
             else:
-                self.goal_position = nearest_diamond
-
+                self.goal_position = temp_diamond
         if self.goal_position:
             if bot_position == nearest_teleporter and self.goal_position == nearest_teleporter:
-                delta_x, delta_y = random.choice(
-                    [(1, 0), (0, 1), (-1, 0), (0, -1)])
+                self.goal_position = base
+                delta_x, delta_y = get_direction_pribadi(
+                    bot_position.x, bot_position.y, self.goal_position.x, self.goal_position.y)
+
             else:
                 teleporter_positions = [
                     teleporter.position for teleporter in teleport_game_objects]
-
                 delta_x, delta_y = get_direction_pribadi(
-                    bot_position.x,
-                    bot_position.y,
-                    self.goal_position.x,
-                    self.goal_position.y,
-                    avoid_teleporters=teleporter_positions
-                )
+                    bot_position.x, bot_position.y, self.goal_position.x, self.goal_position.y, avoid_teleporters=teleporter_positions)
+
         else:
             # Roam around
             delta = self.directions[self.current_direction]
@@ -175,4 +193,7 @@ class shortdistance(BaseLogic):
                 self.current_direction = (self.current_direction + 1) % len(
                     self.directions
                 )
+
+        if delta_x == 0 and delta_y == 0:
+            delta_x, delta_y = direction_correcter(delta_x, delta_y)
         return delta_x, delta_y

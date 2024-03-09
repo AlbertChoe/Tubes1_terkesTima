@@ -54,7 +54,7 @@ def get_direction_pribadi(current_x, current_y, dest_x, dest_y, avoid_teleporter
     delta_x = clamp(dest_x - current_x, -1, 1)
     delta_y = clamp(dest_y - current_y, -1, 1)
 
-    # Menghindar dari teleporter
+    # Mengcoba Menghindar dari teleporter
     if (current_x + delta_x, current_y + delta_y) in avoid_teleporters and (dest_x, dest_y) not in avoid_teleporters:
         alternative_moves = [(1, 0), (0, 1), (-1, 0), (0, -1)]
         alternative_moves.remove((delta_x, delta_y))
