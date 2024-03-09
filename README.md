@@ -34,34 +34,6 @@ Program permainan Diamonds terdiri atas:
 
 Repositori ini berisi implementasi algoritma greedy by highest density dalam pembuatan bot permainan diamonds. Greedy by Highest Density adalah strategi greedy yang mengutamakan densitas tertinggi dari hasil pembagian poin yang didapatkan dari sebuah diamond dibagikan dengan jarak yang harus ditempuh untuk mendapatkan diamond tersebut.
 
-<!--
-## Technologies Used
-
-1. Frontend
-   - React
-   - Tailwind
-2. Backend
-   - Python
-   - Flask
-
-## Screenshots
-
-![image](https://github.com/AlbertChoe/Tucil1_13522081/assets/114172712/4b999273-cbaf-462a-9b5a-e029c3783b59)
-![image](https://github.com/AlbertChoe/Tucil1_13522081/assets/114172712/425013e4-d95a-4ab6-80f6-de91c1b6d78d)
-![image](https://github.com/AlbertChoe/Tucil1_13522081/assets/114172712/0666c476-a856-4dfc-b552-9c6a8f12b04b) -->
-
-<!-- If you have screenshots you'd like to share, include them here. -->
-
-### Search Page
-
-<!-- ![LandingPage](./img/searchpage.png)-->
-
-### Sample Search
-
-#### **Upload Photo By Image**
-
-#### **Upload Photo By Camera**
-
 ## Requirements Program
 
 1. Game Engine
@@ -143,10 +115,8 @@ Repositori ini berisi implementasi algoritma greedy by highest density dalam pem
     i. Jika berhasil, tampilan terminal akan terlihat seperti gambar di bawah ini.
     ![alt text](img/image-2.png)
 
-2.  Jalankan bot starter pack dengan cara mengunduh kit dengan ekstensi .zip yang terdapat pada tautan berikut
-
-https://github.com/haziqam/tubes1-IF2211-bot-starter-pack/releases/tag/v1.0.1
-a. Lakukan ekstraksi file zip tersebut, kemudian masuk ke folder hasil ekstrak tersebut dan buka terminal b. Jalankan perintah berikut untuk masuk ke root directory dari project
+2.  Jalankan bot starter pack dengan cara mengunduh kit dengan ekstensi .zip yang terdapat pada tautan berikut https://github.com/haziqam/tubes1-IF2211-bot-starter-pack/releases/tag/v1.0.1
+    a. Lakukan ekstraksi file zip tersebut, kemudian masuk ke folder hasil ekstrak tersebut dan buka terminal b. Jalankan perintah berikut untuk masuk ke root directory dari project
 
     ```bash
     cd tubes1-IF2110-bot-starter-pack-1.0.1
@@ -157,6 +127,7 @@ a. Lakukan ekstraksi file zip tersebut, kemudian masuk ke folder hasil ekstrak t
     ```bash
     pip install -r requirements.txt
     ```
+
     c. Jalankan program dengan cara menjalankan perintah berikut.
 
     ```bash
@@ -170,6 +141,7 @@ a. Lakukan ekstraksi file zip tersebut, kemudian masuk ke folder hasil ekstrak t
     ```
 
     Untuk Linux / (possibly) macOS
+
     ```bash
     ./run-bots.sh
     ```
@@ -177,7 +149,7 @@ a. Lakukan ekstraksi file zip tersebut, kemudian masuk ke folder hasil ekstrak t
 ## Dokumentasi Program
 
 ![alt text](img/image.png)
-![alt text](image-1.png)
+![alt text](img/image-1.png)
 
 <!-- ## Creator -->
 
