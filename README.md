@@ -6,9 +6,9 @@
 
 | NIM      | Nama               | Kelas |
 | -------- | ------------------ | ----- |
+| 10023519 | Muhammad Fikri     | K-01  |
 | 13522081 | Albert             | K-01  |
 | 13522111 | Ivan Hendrawan Tan | K-01  |
-| 10023519 | Muhammad Fikri     | K-01  |
 
 ## Table of Contents
 
